@@ -1,0 +1,3 @@
+Apresentar a documentação do código, com um nível de abstração mais elevada.
+Mostrar os métodos, suas entradas e saídas, e toda informação relevante aos 
+outros grupos.
