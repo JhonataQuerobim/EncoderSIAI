@@ -1,19 +1,28 @@
-//#include "Arduino.h"
+#include "Arduino.h"
 #include "Contador.h"
 
-Contador::Contador(int *p)
+Contador::Contador(int *p, int interv, int sent)
 {
     pinos = p;
     for (int i = 0; i < 8; i++) {
       pinMode(pinos[i], INPUT);
   }
+
+  contagem = 0;
+  contagemAnterior = 0;
+  intervalo = interv;
+  posicao = 0;
+  posicaoAnterior = 0;
+  velocidade = 0;
+  sentidoPin = sent;
 }
 
 void Contador::atualiza()
-{
-    calculaContagem();
-    calculaPosicao();
-    calculaVelocidade();
+{ 
+  sentido = (digitalRead(sentidoPin) == HIGH) ? 1 : -1;
+  calculaContagem();
+  calculaPosicao();
+  calculaVelocidade();
 }
 
 double Contador::getPosicao()
@@ -24,6 +33,11 @@ double Contador::getPosicao()
 double Contador::getVelocidade()
 {
     return velocidade;
+}
+
+int Contador::getSentido()
+{
+    return sentido;
 }
 
 void Contador::calculaContagem()
