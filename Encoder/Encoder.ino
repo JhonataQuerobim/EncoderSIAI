@@ -2,6 +2,7 @@
 /*
  * Intervalo da interrupção no sistema, em microssegundos
  */
+#define pino 22 // Pino da ponte h que, quando HIGH -> Horario, e LOW -> Anti-horário
 #define intervalo 1000000
 
 /*
@@ -20,7 +21,6 @@ int contagem = 0;
 int pinos[] = {
   46, 48, 50, 52, 47, 49, 51, 53
 };
-int valores[8];
 
 /*
  * Valores das variáveis do robô
@@ -32,9 +32,7 @@ double velocidade = 0;
  /*
  * Variáveis de sentido
  */
- int sentidoA = 0;
- int sentidoH = 1;
- int multiplicadorSentido = 1;
+int sentido = 0;
 
  /*
   *  Variáveis de medição de tempo (frequência em torno de 7.7k )
@@ -108,6 +106,8 @@ int binToInt()
 
 void getPosicao ()
 {
+  sentido = (digitalRead(pino) == HIGH) ? 1 : -1; 
+
   oldPosicao = newPosicao;
   
   int deltaContagem = 0;                                //Diferença entre a última contagem e a contagem atual
@@ -125,37 +125,21 @@ void getPosicao ()
   /*
    *  Verifica o sentido do giro do encoder 
    */
-  if(sentidoH == HIGH && sentidoA == LOW)
-  {
-    multiplicadorSentido = 1;
-  }
-  else
-  {
-    if(sentidoH == LOW && sentidoA == HIGH)
-    {
-      multiplicadorSentido = -1;
-    }
-  }
-  deltaContagem *= multiplicadorSentido;
+  deltaContagem *= sentido;
 /*
  * Necessário as especificações do encoder e do roscamento em que o robô irá se deslocar
  * Isso irá definir sua posição vertical através do tempo
  */
-  convert(deltaContagem);
+/*
+  * Medindo no braço do robô, foi constatado que as 400 contagens do encoder equivalem a uma variação
+  * vertical de (4,0  0,5)mm, ou seja, cada contagem equivale a 0,01mm de movimento vertical
+  */
+  newPosicao = oldPosicao + (double)deltaContagem*0.01;
 
  /*
   * Aqui, a posição que o braço do robô vai estar já foi definida
   */
 
-}
-
-void convert(int deltaContagem)
-{
-  /*
-   * Medindo no braço do robô, foi constatado que as 400 contagens do encoder equivalem a uma variação
-   * vertical de (4,0  0,5)mm, ou seja, cada contagem equivale a 0,01mm de movimento vertical
-   */
-  newPosicao = oldPosicao + (double)deltaContagem*0.01;
 }
 
 void getVelocidade ()
@@ -169,14 +153,9 @@ void getVelocidade ()
 
 }
 
-void loop(){
-
-  sentidoH = digitalRead(22); 
-  sentidoA = !sentidoH;
-/* 
-  atualPos = newPosicao - oldPosicao;
-  if (atualPos != 0) {
-    
-  }
-  */
+void loop()
+{
+  Serial.println(newPosicao);
+  Serial.println(velocidade);
+  Serial.println(sentido);
 }
