@@ -1,14 +1,12 @@
-#define tam 8  //Tamanho do barramento do contador
 /*
- * Intervalo da interrupção no sistema, em microssegundos
- */
-#define pino 22 // Pino da ponte h que, quando HIGH -> Horario, e LOW -> Anti-horário
-#define intervalo 1000000
+    Autores: Carlos Gomes, Gustavo de Souza, Jhonata Querobim e Vinicíus Peixoto
+*/
 
-/*
- * Biblioteca que contém interrupção por tempo
- */
-#include <TimerOne.h>
+#define tam 8  //Tamanho do barramento do contador
+#define pino 22 // Pino da ponte h que, quando HIGH -> Horario, e LOW -> Anti-horário
+#define intervalo 1000000 //Intervalo da interrupção no sistema, em microssegundos
+
+#include <TimerOne.h> //Biblioteca que contém interrupção por tempo
 
 
 /*
@@ -18,7 +16,8 @@
 int oldContagem = 0;
 int contagem = 0;
 
-int pinos[] = {
+int pinos[] =
+{
   46, 48, 50, 52, 47, 49, 51, 53
 };
 
@@ -37,12 +36,9 @@ int sentido = 0;
  /*
   *  Variáveis de medição de tempo (frequência em torno de 7.7k )
   */
-  unsigned long tempoInicio = 0;
-  unsigned long tempoFinal = 0;
+unsigned long tempoInicio = 0;
+unsigned long tempoFinal = 0;
   
-/*
- * Configuração inicial do Arduino
- */
 void setup() 
 {
 
@@ -69,19 +65,22 @@ void setup()
 }
 
 /*
- * Função de interrupção
+ * Função de interrupção, calcula também o tempo de execução das rotinas de cálculo da posição, velocidade e contagem
  */
 void leEncoder()
 {
   tempoInicio = micros();
-  contagem = binToInt();        //Converte os valores que vêm do contador em um valor inteiro
-  getPosicao();                 //Obtem a posição do robô a partir da contagem do contador
-  getVelocidade();              //Obtem a velocidade a partir da nova posição do robô
+  getContagem();
+  getPosicao();
+  getVelocidade();
   tempoFinal = micros();
   Serial.println(tempoFinal-tempoInicio);
 }
 
-int binToInt()
+/*
+ * Converte os valores que vêm do contador em um valor inteiro
+ */
+void getContagem()
 {
   int recebe;
   int somaParcial = 0;
@@ -101,9 +100,12 @@ int binToInt()
     somaParcial += recebe;
   }
 
-  return somaParcial;
+  contagem = somaParcial;
 }
 
+/*
+ * Obtem a posição do robô a partir da contagem do contador
+ */
 void getPosicao ()
 {
   sentido = (digitalRead(pino) == HIGH) ? 1 : -1; 
@@ -136,12 +138,11 @@ void getPosicao ()
   */
   newPosicao = oldPosicao + (double)deltaContagem*0.01;
 
- /*
-  * Aqui, a posição que o braço do robô vai estar já foi definida
-  */
-
 }
 
+/*
+ * Obtem a velocidade a partir da nova posição do robô
+ */
 void getVelocidade ()
 {
   /*
