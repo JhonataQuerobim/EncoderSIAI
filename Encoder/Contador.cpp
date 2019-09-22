@@ -1,6 +1,11 @@
 #include "Arduino.h"
 #include "Contador.h"
-
+/*
+  Construtor da classe Contador
+    *p Ponteiro para a posição inicial de um vetor contendo os pinos do encoder
+    interv Intervalo entre chama consultas ao encoder (ms)
+    sent Pino da ponte H que indicará o sentido de giro do motor
+ */
 Contador::Contador(int *p, int interv, int sent)
 {
     pinos = p;
@@ -16,7 +21,29 @@ Contador::Contador(int *p, int interv, int sent)
   velocidade = 0;
   sentidoPin = sent;
 }
+/*
+  Construtor de cópia
+ */
+Contador::Contador(const Contador &c)
+{
+  pinos = c.pinos;
+  contagem = c.contagem;
+  intervalo = c.intervalo;
+  posicao = c.posicao;
+  posicaoAnterior = c.posicaoAnterior;
+  velocidade = c.velocidade;
+  sentidoPin = c.sentidoPin;
+}
+/*
+  Destrutor
+ */
+Contador::~Contador()
+{
 
+}
+/*
+  Atualiza os valores de contagem, posição e velocidade
+ */
 void Contador::atualiza()
 { 
   sentido = (digitalRead(sentidoPin) == HIGH) ? 1 : -1;
@@ -24,22 +51,30 @@ void Contador::atualiza()
   calculaPosicao();
   calculaVelocidade();
 }
-
+/*
+  Retorna a posição
+ */
 double Contador::getPosicao()
 {
     return posicao;
 }
-
+/*
+  Retorna a velocidade
+ */
 double Contador::getVelocidade()
 {
     return velocidade;
 }
-
+/*
+  Retrona o sentido
+ */
 int Contador::getSentido()
 {
     return sentido;
 }
-
+/*
+  Calcula a contagem lendo os pinos do contador e convertendo eles de binário para inteiro
+ */
 void Contador::calculaContagem()
 {
   int recebe;
@@ -62,7 +97,9 @@ void Contador::calculaContagem()
 
   contagem = somaParcial;
 }
-
+/*
+  Calcula a posição, tratando casos como o estouro de contagem do encoder e o sentido de giro
+ */
 void Contador::calculaPosicao()
 {
   posicaoAnterior = posicao;
@@ -79,30 +116,20 @@ void Contador::calculaPosicao()
 
   contagemAnterior = contagem;
 
-  /*
-   *  Verifica o sentido do giro do encoder 
-   */
-  deltaContagem *= sentido;
+  deltaContagem *= sentido;     //Verifica o sentido do giro do encoder 
 
  /*
  * Medindo no braço do robô, foi constatado que as 400 contagens do encoder equivalem a uma variação
  * vertical de (4,0  0,5)mm, ou seja, cada contagem equivale a 0,01mm de movimento vertical
  */
+
   posicao = posicaoAnterior + (double)deltaContagem*0.01;
 
- /*
-  * Aqui, a posição que o braço do robô vai estar já foi definida
-  */
-
 }
-
+/*
+  Calcula a velocidade a partir das diferenças nas posições e no intervalo entre chamadas da função
+ */
 void Contador::calculaVelocidade ()
 {
-  /*
-   * A velocidade do motor é definida pela diferença de posição no tempo entre chamadas de interrupção
-   * Uma velocidade negativa indica que o motor está descendo
-   * Unidade: mm/s
-   */
   velocidade = (posicao - posicaoAnterior)*1000000/intervalo;
-
 }

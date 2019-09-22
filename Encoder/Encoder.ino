@@ -1,8 +1,5 @@
 #define tam 8  //Tamanho do barramento do contador
-/*
- * Intervalo da interrupção no sistema, em microssegundos
- */
-#define intrv 1000000
+#define intrv 1000000 //Intervalo da interrupção no sistema, em microssegundos
 
 /*
  * Biblioteca que contém interrupção por tempo
@@ -14,21 +11,13 @@
  * Valor que vem do contador de 8 bits
  * Intervalo de 0 a 255
  */
-
-int pinos[] = {
+int pinos[] = 
+{
   46, 48, 50, 52, 47, 49, 51, 53
 };
 int sentido;
 double posicao;
 double velocidade;
-
-/*
- * Valores das variáveis do robô
- */
- 
- /*
- * Variáveis de sentido
- */
 
  /*
   *  Variáveis de medição de tempo (frequência em torno de 7.7k )
@@ -36,10 +25,7 @@ double velocidade;
   unsigned long tempoInicio = 0;
   unsigned long tempoFinal = 0;
   Contador contador = Contador(pinos, intrv, 22);
-  
-/*
- * Configuração inicial do Arduino
- */
+
 void setup() 
 {
 
@@ -83,10 +69,4 @@ void loop()
   Serial.println(posicao);
   Serial.println(velocidade);
   
-/* 
-  atualPos = newPosicao - oldPosicao;
-  if (atualPos != 0) {
-    
-  }
-  */
 }
