@@ -52,6 +52,13 @@ void Contador::atualiza()
   calculaVelocidade();
 }
 /*
+  Retrona o sentido
+ */
+int Contador::getSentido()
+{
+    return sentido;
+}
+/*
   Retorna a posição
  */
 double Contador::getPosicao()
@@ -66,11 +73,11 @@ double Contador::getVelocidade()
     return velocidade;
 }
 /*
-  Retrona o sentido
+  Altera o intervalo
  */
-int Contador::getSentido()
+void Contador::setIntervalo(int interv)
 {
-    return sentido;
+  intervalo = interv;
 }
 /*
   Calcula a contagem lendo os pinos do contador e convertendo eles de binário para inteiro

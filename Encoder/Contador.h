@@ -17,6 +17,7 @@ class Contador
         int getSentido();
         double getPosicao();
         double getVelocidade();
+        void setIntervalo(int interv);
 
     private:
         int contagem;       //Contagem mais atual do encoder, convertida do binário
