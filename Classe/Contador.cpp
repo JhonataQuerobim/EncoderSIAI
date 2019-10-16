@@ -3,10 +3,9 @@
 /*
   Construtor da classe Contador
     *p Ponteiro para a posição inicial de um vetor contendo os pinos do encoder
-    interv Intervalo entre chama consultas ao encoder (ms)
     sent Pino da ponte H que indicará o sentido de giro do motor
  */
-Contador::Contador(int *p, int interv, int sent)
+Contador::Contador(int *p, int sent)
 {
     pinos = p;
     for (int i = 0; i < 8; i++) {
@@ -15,11 +14,12 @@ Contador::Contador(int *p, int interv, int sent)
 
   contagem = 0;
   contagemAnterior = 0;
-  intervalo = interv;
   posicao = 0;
   posicaoAnterior = 0;
   velocidade = 0;
   sentidoPin = sent;
+  tempoAtual = millis();
+  tempoAnterior = 0;
 }
 /*
   Construtor de cópia
@@ -28,11 +28,12 @@ Contador::Contador(const Contador &c)
 {
   pinos = c.pinos;
   contagem = c.contagem;
-  intervalo = c.intervalo;
   posicao = c.posicao;
   posicaoAnterior = c.posicaoAnterior;
   velocidade = c.velocidade;
   sentidoPin = c.sentidoPin;
+  tempoAtual = c.tempoAtual;
+  tempoAnterior = c.tempoAnterior;
 }
 /*
   Destrutor
@@ -42,42 +43,29 @@ Contador::~Contador()
 
 }
 /*
-  Atualiza os valores de contagem, posição e velocidade
- */
-void Contador::atualiza()
-{ 
-  sentido = (digitalRead(sentidoPin) == HIGH) ? 1 : -1;
-  calculaContagem();
-  calculaPosicao();
-  calculaVelocidade();
-}
-/*
   Retrona o sentido
  */
 int Contador::getSentido()
 {
-    return sentido;
+  sentido = (digitalRead(sentidoPin) == HIGH) ? 1 : -1;
+  return sentido;
 }
 /*
   Retorna a posição
  */
 double Contador::getPosicao()
 {
-    return posicao;
+  calculaPosicao();
+  return posicao;
 }
 /*
   Retorna a velocidade
  */
 double Contador::getVelocidade()
 {
-    return velocidade;
-}
-/*
-  Altera o intervalo
- */
-void Contador::setIntervalo(int interv)
-{
-  intervalo = interv;
+  calculaPosicao();
+  calculaVelocidade();
+  return velocidade;
 }
 /*
   Calcula a contagem lendo os pinos do contador e convertendo eles de binário para inteiro
@@ -101,7 +89,8 @@ void Contador::calculaContagem()
     // Coloca em uma soma parcial;
     somaParcial += recebe;
   }
-
+  tempoAnterior = tempoAtual;
+  tempoAtual = millis();
   contagem = somaParcial;
 }
 /*
@@ -109,6 +98,9 @@ void Contador::calculaContagem()
  */
 void Contador::calculaPosicao()
 {
+  calculaContagem();
+  sentido = (digitalRead(sentidoPin) == HIGH) ? 1 : -1;
+
   posicaoAnterior = posicao;
   
   int deltaContagem = 0;                                //Diferença entre a última contagem e a contagem atual
@@ -138,5 +130,5 @@ void Contador::calculaPosicao()
  */
 void Contador::calculaVelocidade ()
 {
-  velocidade = (posicao - posicaoAnterior)*1000000/intervalo;
+  velocidade = (posicao - posicaoAnterior)*1000/(tempoAtual - tempoAnterior);
 }

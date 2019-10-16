@@ -15,21 +15,12 @@ int pinos[] =
 {
   46, 48, 50, 52, 47, 49, 51, 53
 };
-int sentido;
-double posicao;
-double velocidade;
+double PosicaoDesejada;
 
- /*
-  *  Variáveis de medição de tempo (frequência em torno de 7.7k )
-  */
-  unsigned long tempoInicio = 0;
-  unsigned long tempoFinal = 0;
-  Contador contador = Contador(pinos, intrv, 22);
+ Contador contador = Contador(pinos, 22);
 
 void setup() 
 {
-
-  
 /*
  * Inicialização do timer
  * O intervalo de interrupção pode ser definido aqui
@@ -43,7 +34,7 @@ void setup()
    *  programa para nunca voltar para a função principal se o período for curto e
    *  a função de interrupção for complexa
    */
-  Timer1.attachInterrupt(leEncoder);
+  Timer1.attachInterrupt(subtracao);
 
   Serial.begin(9600);
 }
@@ -51,22 +42,19 @@ void setup()
 /*
  * Função de interrupção
  */
-void leEncoder()
+void subtracao()
 {
-  tempoInicio = micros();
-  contador.atualiza();
-  tempoFinal = micros();
-  Serial.println(tempoFinal-tempoInicio);
+  double diferenca = PosicaoDesejada - contador.getPosicao();
+  
+  if (diferenca != 0)
+  {
+    //controle(diferenca);
+  }
 }
 
 void loop()
-{
-  sentido = contador.getSentido();
-  posicao = contador.getPosicao();
-  velocidade = contador.getVelocidade();
-
-  Serial.println(sentido);
-  Serial.println(posicao);
-  Serial.println(velocidade);
+{ 
+  // PosicaoDesejada = 200;
+  // Um monte de nada
   
 }
