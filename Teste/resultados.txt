@@ -1,0 +1,2 @@
+Posicao : 0.500000 mm Velocidade : 100.000000 mm/s
+Posicao : 1.000000 mm Velocidade : 200.000000 mm/s
