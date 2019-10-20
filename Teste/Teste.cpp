@@ -2,18 +2,20 @@
 # include <fstream>
 # include <string>
 
-    int contagem;       //Contagem mais atual do encoder, convertida do binário
-    int contagemAnterior;
-    int sentido;        //1 -> Horário, -1 -> Anti-horário
-    double posicao;     //Posição em mm
-    double posicaoAnterior;
-    double velocidade;  //Velocidade em mm/s
-    double tempoAtual;
-    double tempoAnterior;
+  int contagem;       //Contagem mais atual do encoder, convertida do binário
+  int contagemAnterior;
+  int sentido;        //1 -> Horário, -1 -> Anti-horário
+  double posicao;     //Posição em mm
+  double posicaoAnterior;
+  double velocidade;  //Velocidade em mm/s
+  double tempoAtual;
+  double tempoAnterior;
+  double posCorreta;
+  double velCorreta;
 
-    void pegaDados(std::ifstream& entrada);
-    void calculaPosicao(std::ifstream& entrada, std::ofstream& saida);
-    void calculaVelocidade (std::ofstream& saida);
+  void pegaDados(std::ifstream& entrada);
+  void calculaPosicao(std::ifstream& entrada, std::ofstream& saida);
+  void calculaVelocidade (std::ofstream& saida);
 
 
     
@@ -43,10 +45,10 @@ int main ()
 
 void pegaDados(std::ifstream& entrada)
 {
-  std::string posicaoArq, contagemAnteriorArq, tempoAnteriorArq, contagemArq, tempoAtualArq, sentidoArq;
+  std::string posicaoArq, contagemAnteriorArq, tempoAnteriorArq, contagemArq, tempoAtualArq, sentidoArq, posCorretaArq, velCorretaArq;
 
   if(entrada.is_open()){
-      entrada >> posicaoArq >> contagemAnteriorArq >> tempoAnteriorArq >> contagemArq >> tempoAtualArq >> sentidoArq;
+      entrada >> posicaoArq >> contagemAnteriorArq >> tempoAnteriorArq >> contagemArq >> tempoAtualArq >> sentidoArq >> posCorretaArq >> velCorretaArq;
  }
 
   posicao = std::stod(posicaoArq);
@@ -55,6 +57,8 @@ void pegaDados(std::ifstream& entrada)
   contagem = std::stoi(contagemArq);  
   tempoAtual = std::stod(tempoAtualArq);
   sentido = std::stoi(sentidoArq);
+  posCorreta = std::stod(posCorretaArq);
+  velCorreta = std::stod(velCorretaArq);
 }
 
 /*
@@ -62,6 +66,7 @@ void pegaDados(std::ifstream& entrada)
  */
 void calculaPosicao(std::ifstream& entrada, std::ofstream& saida)
 {
+  std::string avaliacao;
   pegaDados(entrada);
 
   posicaoAnterior = posicao;
@@ -86,7 +91,8 @@ void calculaPosicao(std::ifstream& entrada, std::ofstream& saida)
  */
 
   posicao = posicaoAnterior + (double)deltaContagem*0.01;
-  saida << "Posicao : " << std::to_string(posicao) << " mm ";
+  avaliacao = (posicao == posCorreta) ? "|Correto| " : "|Errado| ";
+  saida << "Posicao : " << std::to_string(posicao) << " mm " << avaliacao;
   
 
 }
@@ -95,6 +101,10 @@ void calculaPosicao(std::ifstream& entrada, std::ofstream& saida)
  */
 void calculaVelocidade (std::ofstream& saida)
 {
+  std::string avaliacao;
   velocidade = (posicao - posicaoAnterior)*1000/(tempoAtual - tempoAnterior);
-  saida << "Velocidade : " << std::to_string(velocidade) << " mm/s" << std::endl;
+
+  avaliacao = (velocidade == velCorreta) ? "|Correto|" : "|Errado|";
+
+  saida << "Velocidade : " << std::to_string(velocidade) << " mm/s " << avaliacao << std::endl;
 }
