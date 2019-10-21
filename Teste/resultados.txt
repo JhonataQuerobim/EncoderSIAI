@@ -1,2 +1,5 @@
-Posicao : 0.500000 mm Velocidade : 100.000000 mm/s
-Posicao : 1.000000 mm Velocidade : 200.000000 mm/s
+Posicao : 0.500000 mm |Correto| Velocidade : 100.000000 mm/s |Correto|
+Posicao : 1.000000 mm |Correto| Velocidade : 200.000000 mm/s |Correto|
+Posicao : 4.800000 mm |Correto| Velocidade : -100.000000 mm/s |Errado|
+Posicao : 4.800000 mm |Correto| Velocidade : -100.000000 mm/s |Correto|
+Posicao : 0.260000 mm |Correto| Velocidade : 10.000000 mm/s |Correto|

@@ -77,7 +77,7 @@ void Contador::calculaContagem()
 
   for (int pos = 0; pos < 8; pos++)
   {
-    // Variável que recebe o valor lido no pino
+    // Variável "recebe" recebe o valor lido no pino
     recebe = digitalRead(pinos[pos]);
 
     /* Calcula o shift do valor, assim evita de fazer
@@ -91,7 +91,10 @@ void Contador::calculaContagem()
   }
   tempoAnterior = tempoAtual;
   tempoAtual = millis();
+
+  // Atualiza a contagem com a soma parcial
   contagem = somaParcial;
+  sentido = (digitalRead(sentidoPin) == HIGH) ? 1 : -1;
 }
 /*
   Calcula a posição, tratando casos como o estouro de contagem do encoder e o sentido de giro
@@ -99,13 +102,12 @@ void Contador::calculaContagem()
 void Contador::calculaPosicao()
 {
   calculaContagem();
-  sentido = (digitalRead(sentidoPin) == HIGH) ? 1 : -1;
 
   posicaoAnterior = posicao;
   
-  int deltaContagem = 0;                                //Diferença entre a última contagem e a contagem atual
+  int deltaContagem = 0;                                //Calcual a diferença entre a última contagem e a contagem atual
   
-  if (contagem < contagemAnterior)                           //O contador completou um ciclo de contagem
+  if (contagem < contagemAnterior)                           //Ajuste, caso o contador complete um ciclo de contagem
   {
     deltaContagem = ((256 - contagemAnterior) + contagem);   //Soma do que faltava para completar uma volta com o que passou depois da volta completa
   } else
@@ -118,6 +120,7 @@ void Contador::calculaPosicao()
   deltaContagem *= sentido;     //Verifica o sentido do giro do encoder 
 
  /*
+ * Soma ou subtrai a diferença, e converte para mm.
  * Medindo no braço do robô, foi constatado que as 400 contagens do encoder equivalem a uma variação
  * vertical de (4,0  0,5)mm, ou seja, cada contagem equivale a 0,01mm de movimento vertical
  */
@@ -126,7 +129,7 @@ void Contador::calculaPosicao()
 
 }
 /*
-  Calcula a velocidade a partir das diferenças nas posições e no intervalo entre chamadas da função
+  Calcula a velocidade em mm/s, a partir das diferenças nas posições e no intervalo de tempo
  */
 void Contador::calculaVelocidade ()
 {

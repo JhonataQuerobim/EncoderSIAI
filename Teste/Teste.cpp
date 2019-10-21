@@ -1,7 +1,9 @@
 # include <iostream>
 # include <fstream>
 # include <string>
+# include <cmath>
 
+  int pinos[8] = {0, 1, 0, 0, 1, 0, 0, 0};
   int contagem;       //Contagem mais atual do encoder, convertida do binário
   int contagemAnterior;
   int sentido;        //1 -> Horário, -1 -> Anti-horário
@@ -16,31 +18,34 @@
   void pegaDados(std::ifstream& entrada);
   void calculaPosicao(std::ifstream& entrada, std::ofstream& saida);
   void calculaVelocidade (std::ofstream& saida);
+  int calculaContagem();
+
 
 
     
 
 int main ()
 {
-    std::ifstream entrada;
-    std::ofstream saida;
+  std::ifstream entrada;
+  std::ofstream saida;
 
-    int exemplos = 2;
+  int exemplos = 5;
 
-    entrada.open("testes.txt");
-    saida.open("resultados.txt");
+  entrada.open("testes.txt");
+  saida.open("resultados.txt");
 
-    for (int i = 0; i < exemplos; i++)
-    {
-        calculaPosicao(entrada, saida);
-        calculaVelocidade(saida);
-    }
+  for (int i = 0; i < exemplos; i++)
+  {
+      calculaPosicao(entrada, saida);
+      calculaVelocidade(saida);
+  }
 
-    saida.close();
-    entrada.close();
-
-    
-    return 0;
+  saida.close();
+  entrada.close();
+  
+  std::cout << calculaContagem() << std::endl;
+  
+  return 0;
 }
 
 void pegaDados(std::ifstream& entrada)
@@ -91,7 +96,7 @@ void calculaPosicao(std::ifstream& entrada, std::ofstream& saida)
  */
 
   posicao = posicaoAnterior + (double)deltaContagem*0.01;
-  avaliacao = (posicao == posCorreta) ? "|Correto| " : "|Errado| ";
+  avaliacao = (abs(posicao - posCorreta) < 0.001) ? "|Correto| " : "|Errado| ";
   saida << "Posicao : " << std::to_string(posicao) << " mm " << avaliacao;
   
 
@@ -103,8 +108,29 @@ void calculaVelocidade (std::ofstream& saida)
 {
   std::string avaliacao;
   velocidade = (posicao - posicaoAnterior)*1000/(tempoAtual - tempoAnterior);
-
-  avaliacao = (velocidade == velCorreta) ? "|Correto|" : "|Errado|";
+  avaliacao = (abs(velocidade - velCorreta) < 0.001) ? "|Correto|" : "|Errado|";
 
   saida << "Velocidade : " << std::to_string(velocidade) << " mm/s " << avaliacao << std::endl;
+}
+
+int calculaContagem()
+{
+  int recebe;
+  int somaParcial = 0;
+
+  for (int pos = 0; pos < 8; pos++)
+  {
+    // Variável "recebe" recebe o valor lido no pino
+    recebe = pinos[pos];
+
+    /* Calcula o shift do valor, assim evita de fazer
+     * potências e fica mais eficiente, por conta dos
+     * valores lidos serem só 0 ou 1
+     */
+    recebe = recebe << pos;
+
+    // Coloca em uma soma parcial;
+    somaParcial += recebe;
+  }
+  return somaParcial;
 }

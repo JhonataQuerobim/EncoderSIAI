@@ -40,12 +40,13 @@ void setup()
 }
 
 /*
- * Função de interrupção
+ * Função da interrupção
  */
 void subtracao()
 {
+  // Sistema checa a posição real
   double diferenca = PosicaoDesejada - contador.getPosicao();
-  
+  // A posição real é a desejada?
   if (diferenca != 0)
   {
     //controle(diferenca);
@@ -54,7 +55,7 @@ void subtracao()
 
 void loop()
 { 
-  // PosicaoDesejada = 200;
+  // PosicaoDesejada = getPosicaoDesejada();
   // Um monte de nada
   
 }
