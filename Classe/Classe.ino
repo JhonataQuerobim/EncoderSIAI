@@ -39,6 +39,37 @@ void setup()
   Serial.begin(9600);
 }
 
+void selecionaEstrategia(int estrategiaControle, double &PWM, int &sentido)
+{
+  if(estrategiaControle == 1)
+  {
+    pid.calcula(PWM, sentido);
+  }
+  else if (estrategiaControle == 2)
+  {
+    pidAdaptativo.calcula(PWM, sentido);
+  }
+  else if (estrategiaControle == 3)
+  {
+    fuzzy.calcula(PWM, sentido);
+  }
+}
+
+void envia(double PWM, int sentido)
+{
+  if(sentido == 1)
+  {
+    analogWrite(0, PWM);
+    analogWrite(1, PWM);
+
+  }
+  else if (sentido == -1)
+  {
+    analogWrite(2, PWM);
+    analogWrite(3, PWM);
+  }
+}
+
 /*
  * Função da interrupção
  */
@@ -49,6 +80,11 @@ void subtracao()
   // A posição real é a desejada?
   if (diferenca != 0)
   {
+    int sentido;
+    double PWM;
+    selecionaEstrategia(estrategiaControle, &PWM, &sentido);
+    envia(PWM, sentido);
+
     //controle(diferenca);
   }
 }
